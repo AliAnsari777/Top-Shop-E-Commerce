@@ -22,9 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -118,12 +116,22 @@ public class ProductController {
     }
 
     @CrossOrigin
-    @PutMapping("/updateQuantity/{id}/{quantity}")
-public Product updateQuantity(@PathVariable Long id, @PathVariable int quantity){
-        Product product=productService.getProduct(id);
-        product.setQuantity(product.getQuantity()-quantity);
-       return productService.save(product);
-}
+    @PostMapping("/updateQuantity")
+    public String updateQuantity(@RequestBody HashMap<Long, Integer> quantityInfo){
+        String result = "false";
+        Product product;
+        for(Map.Entry<Long, Integer> value : quantityInfo.entrySet()){
+            product = productService.getProduct(value.getKey());
+            if(product.getQuantity() >= value.getValue()) {
+                product.setQuantity(product.getQuantity() - value.getValue());
+                productService.save(product);
+                result = "true";
+            }
+            else
+                result = "false";
+        }
+       return result;
+    }
 
     @CrossOrigin
     @GetMapping("/searchByPage")
@@ -163,9 +171,11 @@ public Product updateQuantity(@PathVariable Long id, @PathVariable int quantity)
 
     @CrossOrigin
     @GetMapping("/remove/{id}")
-    public void removeProduct(Long id) {
+    public void removeProduct(@PathVariable Long id) {
+        System.out.println("this is product id: " + id);
          productService.removeProduct(id);
     }
+
     @CrossOrigin
     @GetMapping("/approve/{id}")
     public ResponseEntity pending(@PathVariable Long id) {

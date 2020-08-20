@@ -38,7 +38,7 @@ public class UserCommandService {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
             HashMap<String, Long> shoppingCart = new HashMap<>();
-            shoppingCart.put("userId", temporary.getId());
+            shoppingCart.put("userId", user.getUserAccount().getId());
 
             HttpEntity<HashMap<String , Long >> request = new HttpEntity(shoppingCart, httpHeaders);
             try {

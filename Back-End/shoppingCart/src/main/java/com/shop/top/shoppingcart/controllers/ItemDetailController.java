@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/itemdetail")
 public class ItemDetailController {
@@ -61,5 +62,11 @@ public class ItemDetailController {
     @GetMapping("/shoppingcart/{cartid}")
     public List<ItemDetail> getAllItemsInShoppingCart(@PathVariable("cartid") Long cartId){
         return itemDetailService.getAllItemsInShoppingCart(cartId);
+    }
+
+    ///////////////////////////////////////////////
+    @GetMapping("/activeitemincart/{cartid}")
+    public List<ItemDetail> findAllActiveItemInCart(@PathVariable("cartid") Long cartId){
+        return itemDetailService.findActiveItemInShoppingCart(cartId);
     }
 }

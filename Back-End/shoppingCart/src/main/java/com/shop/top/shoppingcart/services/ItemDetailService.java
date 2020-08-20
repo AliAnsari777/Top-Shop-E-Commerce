@@ -78,20 +78,25 @@ public class ItemDetailService {
         return itemDetailRepository.selectAllShoppingCartItems(cartId);
     }
 
-    public void updateItemAfterPayment(List<ItemDetail> items){
-        Optional<ItemDetail> temp;
-        for(ItemDetail item : items){
-           temp = itemDetailRepository.findById(item.getItemId());
-            if (temp.isPresent()){
-                temp.get().setStatus('P');
-                itemDetailRepository.save(temp.get());
+    public void updateItemAfterPayment(List<Long> orderId, Long cartId){
+        ItemDetail temp;
+        for(Long item : orderId){
+           temp = itemDetailRepository.findByProductIdAndShoppingCartId(item, cartId);
+            if (temp != null){
+                temp.setStatus('P');
+                itemDetailRepository.save(temp);
             }else {
-                throw new RecordNotFoundException("Wrong Item ID", item.getItemId());
+                throw new RecordNotFoundException("Wrong Item ID", item);
             }
         }
     }
 
     public List<ItemDetail> getAllItemsInShoppingCart(Long cartId){
         return itemDetailRepository.selectAllShoppingCartItems(cartId);
+    }
+
+    ////////////////////////////////////////
+    public List<ItemDetail> findActiveItemInShoppingCart(Long cartId){
+        return itemDetailRepository.findActiveItemInShoppingCart(cartId);
     }
 }

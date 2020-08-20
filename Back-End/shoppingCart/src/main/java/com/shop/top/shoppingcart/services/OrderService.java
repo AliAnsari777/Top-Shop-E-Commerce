@@ -1,7 +1,9 @@
 package com.shop.top.shoppingcart.services;
 
 import com.shop.top.shoppingcart.dto.PaymentInformation;
+import com.shop.top.shoppingcart.models.OrderDetail;
 import com.shop.top.shoppingcart.models.Orders;
+import com.shop.top.shoppingcart.models.ShoppingCart;
 import com.shop.top.shoppingcart.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -10,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,14 +22,16 @@ public class OrderService {
 
     OrderRepository orderRepository;
     ItemDetailService itemDetailService;
+    ShoppingCartService shoppingCartService;
     RestTemplate restTemplate;
 
     @Autowired
     public OrderService(OrderRepository orderRepository, RestTemplate restTemplate
-    , ItemDetailService itemDetailService){
+    , ItemDetailService itemDetailService, ShoppingCartService shoppingCartService){
         this.orderRepository = orderRepository;
         this.restTemplate = restTemplate;
         this.itemDetailService = itemDetailService;
+        this.shoppingCartService = shoppingCartService;
     }
 
     public Orders placeOrder(Orders order , PaymentInformation paymentInfo) throws Exception {
@@ -58,16 +63,23 @@ public class OrderService {
         System.out.println("this is before product call" + request.toString());
 
         if (result.get("valid").equals("true") && result.get("amount").equals("true")){
-            //String checking = restTemplate.postForObject("http://localhost:8080/product-service/product/updateQuantity", quantity, String.class);
-            //System.out.println("this is order service " + checking);
+            String checking = restTemplate.postForObject("http://localhost:8080/product-service/product/updateQuantity", quantity, String.class);
+            System.out.println("this is order service " + checking);
 
 
-            //if(checking.equals("true")) {
-//                itemDetailService.updateItemAfterPayment(order.getOrderDetails());
+            if(checking.equals("true")) {
+
+                ShoppingCart cartId = shoppingCartService.getShoppingCartId(order.getUserId());
+                List<Long> productIds = new ArrayList<>();
+
+                for(OrderDetail od : order.getOrderDetails()){
+                    productIds.add(od.getProductId());
+                }
+                itemDetailService.updateItemAfterPayment(productIds, cartId.getShoppingCartId());
                 return orderRepository.save(order);
-            //}
-            //else
-                //throw new Exception("Not enough item in stock");
+            }
+            else
+                throw new Exception("Not enough item in stock");
         }else if (result.get("valid").equals("false")){
             throw new Exception("You card information is not valid");
         }else {

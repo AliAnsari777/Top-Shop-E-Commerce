@@ -30,6 +30,7 @@ public class ShoppingCartController {
     @CrossOrigin(origins = "*")
     @GetMapping("/cartid/{userid}")
     public Long getShoppingCartId(@PathVariable("userid") Long userId) throws Exception {
+        System.out.println("this is user id in shopping cart controller : " + userId);
         ShoppingCart shoppingCart = shoppingCartService.getShoppingCartId(userId);
         return shoppingCart.getShoppingCartId();
     }

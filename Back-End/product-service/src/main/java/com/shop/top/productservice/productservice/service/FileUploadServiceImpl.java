@@ -10,7 +10,8 @@ import java.nio.file.Paths;
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
 ///src/main/resources
-    private static  String uploaddirectory =System.getProperty("user.dir")+"/Back-End/product-service/src/main/resources/image/";
+//private static  String uploaddirectory =System.getProperty("user.dir")+"/src/main/resources/image/";
+    private static  String uploaddirectory ="S:\\MUM Classes Code & Projects\\PM\\Final\\Top-Shop-e-commerce\\Back-End\\product-service\\src\\main\\resources\\image\\";
     @Override
     public String saveImage(MultipartFile file) throws Exception {
        File directory=new File(uploaddirectory);
